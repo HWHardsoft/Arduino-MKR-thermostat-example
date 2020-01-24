@@ -1,7 +1,7 @@
 /*
  *  Application note: Thermostat with MODBUS via RS485 for ArduiTouch MKR  
- *  Version 1.0
- *  Copyright (C) 2019  Hartmut Wendt  www.zihatec.de
+ *  Version 1.1
+ *  Copyright (C) 2020  Hartmut Wendt  www.zihatec.de
  *  
  *  (based on sources of https://github.com/angeloc/simplemodbusng)
  *  
@@ -46,7 +46,6 @@
 #define TFT_CS   A3
 #define TFT_DC   0
 #define TFT_MOSI 8
-#define TFT_RST  22
 #define TFT_CLK  9
 #define TFT_MISO 10
 #define TFT_LED  A2  
@@ -108,7 +107,7 @@ enum { BOOT, COOLING, TEMP_OK, HEATING};        // Thermostat modes
 /*______End of specific constants______*/
 
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 XPT2046_Touchscreen touch(TOUCH_CS,  TOUCH_IRQ);
 
 //define _debug
@@ -130,6 +129,7 @@ XPT2046_Touchscreen touch(TOUCH_CS,  TOUCH_IRQ);
  
 
 void setup() {
+  delay(1000);
   #ifdef _debug
   Serial.begin(9600); 
   #endif
@@ -218,8 +218,9 @@ bool Touch_Event() {
     if (touch.touched()) {   
       p = touch.getPoint(); 
       delay(1);
-      p.x = map(p.x, TS_MINX, TS_MAXX, 0, 320);
-      p.y = map(p.y, TS_MINY, TS_MAXY, 240, 0);
+      p.x = map(p.x, TS_MINX, TS_MAXX, 0, 320); // enable this line for Touchscreen with black header (disable for yellow header)
+      //p.x = map(p.x, TS_MINX, TS_MAXX, 320, 0); // enable for Touchscreen with yellow header (disable for black header)
+      p.y = map(p.y, TS_MINY, TS_MAXY, 240, 0);      
       if (p.z > MINPRESSURE) return true;  
     }
   } 
